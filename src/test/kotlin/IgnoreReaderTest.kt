@@ -1,5 +1,6 @@
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import ru.itmo.rain.terentev.walker.IgnoreWrapper
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -9,20 +10,24 @@ class IgnoreReaderTest {
 
     @Test
     fun `Empty File`() {
-        assertEquals(emptySet<Path>(), processIgnore(curDir + ".bad", ""));
+        val wrapper = IgnoreWrapper(curDir + ".bad", "")
+        assertEquals(emptySet<Path>(), wrapper.files);
+        assertEquals(emptySet<Path>(), wrapper.dirs);
     }
 
     @Test
     fun `Only Comment`() {
-        assertEquals(emptySet<Path>(), processIgnore(curDir + ".comment", ""));
+        val wrapper = IgnoreWrapper(curDir + ".comment", "")
+        assertEquals(emptySet<Path>(), wrapper.files);
+        assertEquals(emptySet<Path>(), wrapper.dirs);
     }
 
     @Test
     fun `Directory and file`() {
-        val exp = HashSet<Path>();
-        exp.add(Paths.get( curDir +"gradle/"))
-        exp.add(Paths.get(curDir +"build.txt"))
-        val res = processIgnore(curDir + ".dir-and-file", curDir )
-        assertEquals(exp, res)
+        val expDir = setOf<Path>(Paths.get(curDir + "gradle/"))
+        val expFile = setOf<Path>(Paths.get(curDir + "build.txt"))
+        val res = IgnoreWrapper(curDir + ".dir-and-file", curDir)
+        assertEquals(expDir, res.dirs)
+        assertEquals(expFile, res.files)
     }
 }
